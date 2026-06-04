@@ -31,10 +31,10 @@
 ════════════════════════════════════════════ --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
 
-    {{-- Card 1: Current GPA --}}
+    {{-- Card 1: Rata-rata Nilai --}}
     <div id="card-gpa" class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col gap-3 hover:border-emerald-500/40 transition-colors duration-200">
         <div class="flex items-center justify-between">
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Current GPA</p>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Rata-rata Nilai</p>
             <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
@@ -42,15 +42,28 @@
             </div>
         </div>
         <div class="flex items-end gap-3">
-            <p class="text-4xl font-extrabold text-slate-100 leading-none">3.75</p>
-            <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full mb-0.5">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-                </svg>
-                +0.05
-            </span>
+            <p class="text-4xl font-extrabold text-slate-100 leading-none">{{ number_format($rataNilai, 2) }}</p>
+            @if ($rataNilai >= 75)
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full mb-0.5">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                    </svg>
+                    Baik
+                </span>
+            @elseif ($rataNilai >= 60)
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full mb-0.5">
+                    Cukup
+                </span>
+            @else
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-rose-400 bg-rose-400/10 border border-rose-400/20 px-2 py-0.5 rounded-full mb-0.5">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                    Rendah
+                </span>
+            @endif
         </div>
-        <p class="text-xs text-slate-500">Dibanding semester lalu</p>
+        <p class="text-xs text-slate-500">Skala 0 – 100 dari seluruh mata kuliah</p>
     </div>
 
     {{-- Card 2: Attendance --}}
@@ -64,33 +77,55 @@
             </div>
         </div>
         <div class="flex items-end gap-2">
-            <p class="text-4xl font-extrabold text-slate-100 leading-none">92<span class="text-2xl text-slate-400 font-semibold">%</span></p>
+            <p class="text-4xl font-extrabold text-slate-100 leading-none">{{ number_format($rataKehadiran, 0) }}<span class="text-2xl text-slate-400 font-semibold">%</span></p>
         </div>
         {{-- Mini progress bar --}}
         <div>
             <div class="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                <div class="h-full bg-cyan-400 rounded-full" style="width: 92%"></div>
+                <div class="h-full bg-cyan-400 rounded-full" style="width: {{ min($rataKehadiran, 100) }}%"></div>
             </div>
             <p class="text-xs text-slate-500 mt-1">Batas minimum: 75%</p>
         </div>
     </div>
 
     {{-- Card 3: Risk Status --}}
-    <div id="card-risk" class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col gap-3 hover:border-emerald-500/40 transition-colors duration-200">
+    @php
+        // Tentukan warna dinamis untuk icon, dot, dan border card
+        if ($status === 'Aman') {
+            $riskIconBg    = 'bg-emerald-500/10 border-emerald-500/20';
+            $riskIconText  = 'text-emerald-400';
+            $riskDotBg     = 'bg-emerald-400';
+            $riskBorder    = 'hover:border-emerald-500/40';
+            $riskSubtext   = 'Tidak ada risiko akademik terdeteksi';
+        } elseif ($status === 'Waspada') {
+            $riskIconBg    = 'bg-amber-500/10 border-amber-500/20';
+            $riskIconText  = 'text-amber-400';
+            $riskDotBg     = 'bg-amber-400';
+            $riskBorder    = 'hover:border-amber-500/40';
+            $riskSubtext   = 'Perlu perhatian, tingkatkan nilai & kehadiran';
+        } else {
+            $riskIconBg    = 'bg-rose-500/10 border-rose-500/20';
+            $riskIconText  = 'text-rose-400';
+            $riskDotBg     = 'bg-rose-400';
+            $riskBorder    = 'hover:border-rose-500/40';
+            $riskSubtext   = 'Segera perbaiki nilai dan tingkatkan kehadiran!';
+        }
+    @endphp
+    <div id="card-risk" class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col gap-3 {{ $riskBorder }} transition-colors duration-200">
         <div class="flex items-center justify-between">
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Active Risk Status</p>
-            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Status Risiko Akademik</p>
+            <div class="w-8 h-8 rounded-lg {{ $riskIconBg }} border flex items-center justify-center">
+                <svg class="w-4 h-4 {{ $riskIconText }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
             </div>
         </div>
         <div class="flex items-center gap-3">
-            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-            <p class="text-3xl font-extrabold text-emerald-400 leading-none">Aman</p>
+            <span class="w-3 h-3 rounded-full {{ $riskDotBg }} animate-pulse flex-shrink-0"></span>
+            <p class="text-3xl font-extrabold {{ $warnaStatus }} leading-none">{{ $status }}</p>
         </div>
-        <p class="text-xs text-slate-500">Tidak ada risiko akademik terdeteksi</p>
+        <p class="text-xs text-slate-500">{{ $riskSubtext }}</p>
     </div>
 
     {{-- Card 4: Target Progress --}}
@@ -104,19 +139,38 @@
                 </svg>
             </div>
         </div>
-        <p class="text-4xl font-extrabold text-slate-100 leading-none">85<span class="text-2xl text-slate-400 font-semibold">%</span></p>
-        {{-- Progress Bar --}}
-        <div>
-            <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700"
-                     style="width: 85%">
+        @if ($target)
+            @php
+                // Hitung progress: rata-rata nilai dikonversi ke skala 4.0 lalu dibanding target IPK
+                $ipkEstimasi   = ($rataNilai / 100) * 4;
+                $progressPct   = $target->target_ipk > 0 ? min(($ipkEstimasi / $target->target_ipk) * 100, 100) : 0;
+            @endphp
+            <p class="text-4xl font-extrabold text-slate-100 leading-none">{{ number_format($progressPct, 0) }}<span class="text-2xl text-slate-400 font-semibold">%</span></p>
+            {{-- Progress Bar --}}
+            <div>
+                <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700"
+                         style="width: {{ $progressPct }}%">
+                    </div>
+                </div>
+                <div class="flex justify-between mt-1">
+                    <p class="text-xs text-slate-500">Target: IPK {{ number_format($target->target_ipk, 2) }}</p>
+                    <p class="text-xs text-emerald-400 font-medium">{{ number_format($progressPct, 0) }}%</p>
                 </div>
             </div>
-            <div class="flex justify-between mt-1">
-                <p class="text-xs text-slate-500">Target: IPK 3.80</p>
-                <p class="text-xs text-emerald-400 font-medium">85%</p>
+        @else
+            <div class="flex flex-col items-center justify-center py-2 text-center">
+                <p class="text-sm font-medium text-slate-400">Belum ada target</p>
+                <p class="text-xs text-slate-500 mt-1 mb-3">Set target untuk melihat progres</p>
+                <a href="{{ route('target.create') }}"
+                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 px-3 py-1.5 rounded-lg transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Set Target
+                </a>
             </div>
-        </div>
+        @endif
     </div>
 
 </div>
@@ -187,24 +241,48 @@
                     <h3 class="text-sm font-bold text-slate-200">Early Warnings</h3>
                     <p class="text-xs text-slate-500 mt-0.5">Peringatan akademik aktif</p>
                 </div>
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <div class="w-8 h-8 rounded-lg {{ $status === 'Aman' ? 'bg-emerald-500/10 border-emerald-500/20' : ($status === 'Waspada' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-rose-500/10 border-rose-500/20') }} border flex items-center justify-center">
+                    <svg class="w-4 h-4 {{ $status === 'Aman' ? 'text-emerald-400' : ($status === 'Waspada' ? 'text-amber-400' : 'text-rose-400') }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                               d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                     </svg>
                 </div>
             </div>
 
-            {{-- No warnings state --}}
-            <div class="flex flex-col items-center justify-center py-4 text-center">
-                <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-3">
-                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                    </svg>
+            @if ($status === 'Aman')
+                {{-- No warnings state --}}
+                <div class="flex flex-col items-center justify-center py-4 text-center">
+                    <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-3">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-emerald-400">No active warnings</p>
+                    <p class="text-xs text-slate-500 mt-1">Performa akademikmu dalam kondisi baik</p>
                 </div>
-                <p class="text-sm font-semibold text-emerald-400">No active warnings</p>
-                <p class="text-xs text-slate-500 mt-1">Performa akademikmu dalam kondisi baik</p>
-            </div>
+            @else
+                {{-- Warning items --}}
+                <ul class="space-y-2.5">
+                    @if ($rataNilai < 75)
+                        <li class="flex items-start gap-2.5">
+                            <span class="w-2 h-2 rounded-full {{ $status === 'Bahaya' ? 'bg-rose-400' : 'bg-amber-400' }} mt-1.5 flex-shrink-0"></span>
+                            <div>
+                                <p class="text-sm font-medium {{ $status === 'Bahaya' ? 'text-rose-300' : 'text-amber-300' }}">Rata-rata nilai rendah</p>
+                                <p class="text-xs text-slate-500">Saat ini {{ number_format($rataNilai, 1) }}, minimal yang diharapkan 75</p>
+                            </div>
+                        </li>
+                    @endif
+                    @if ($rataKehadiran < 80)
+                        <li class="flex items-start gap-2.5">
+                            <span class="w-2 h-2 rounded-full {{ $status === 'Bahaya' ? 'bg-rose-400' : 'bg-amber-400' }} mt-1.5 flex-shrink-0"></span>
+                            <div>
+                                <p class="text-sm font-medium {{ $status === 'Bahaya' ? 'text-rose-300' : 'text-amber-300' }}">Kehadiran perlu ditingkatkan</p>
+                                <p class="text-xs text-slate-500">Saat ini {{ number_format($rataKehadiran, 0) }}%, minimal yang diharapkan 80%</p>
+                            </div>
+                        </li>
+                    @endif
+                </ul>
+            @endif
         </div>
 
         {{-- Card: Recent Activity --}}

@@ -261,13 +261,20 @@
                 <div class="hidden sm:block w-px h-6 bg-slate-700"></div>
 
                 {{-- Notification bell --}}
-                <button class="relative text-slate-400 hover:text-slate-200 transition-colors">
+                @php
+                    $unreadCount = \App\Models\Notifikasi::where('user_id', Auth::id())->where('status', 'unread')->count();
+                @endphp
+                <a href="{{ route('notifikasi.index') }}" class="relative text-slate-400 hover:text-slate-200 transition-colors" title="Notifikasi">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                               d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                     </svg>
-                    <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full"></span>
-                </button>
+                    @if ($unreadCount > 0)
+                        <span class="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full px-1 shadow-sm shadow-rose-500/30">
+                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                        </span>
+                    @endif
+                </a>
                 {{-- Avatar mini --}}
                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow">
                     <span class="text-xs font-bold text-white">

@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\NilaiController;
-use App\Http\Controllers\TargetAkademikController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,17 +46,11 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // CRUD Nilai
     Route::resource('nilai', NilaiController::class)->except(['show']);
 
     // CRUD Kehadiran
     Route::resource('kehadiran', KehadiranController::class)->except(['show']);
-
-    // Target Akademik
-    Route::get('/target', [TargetAkademikController::class, 'index'])->name('target.index');
-    Route::post('/target', [TargetAkademikController::class, 'store'])->name('target.store');
 });

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\NilaiController;
+use App\Http\Controllers\TargetAkademikController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,4 +55,8 @@ Route::middleware('auth')->group(function () {
 
     // CRUD Kehadiran
     Route::resource('kehadiran', KehadiranController::class)->except(['show']);
+
+    // Target Akademik
+    Route::get('/target', [TargetAkademikController::class, 'index'])->name('target.index');
+    Route::post('/target', [TargetAkademikController::class, 'store'])->name('target.store');
 });

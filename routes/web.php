@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KehadiranController;
+use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\TargetController;
 use App\Http\Controllers\NilaiController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,4 +55,12 @@ Route::middleware('auth')->group(function () {
 
     // CRUD Kehadiran
     Route::resource('kehadiran', KehadiranController::class)->except(['show']);
+
+    // CRUD Target Akademik
+    Route::resource('target', TargetController::class)->except(['show']);
+
+    // Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::patch('/notifikasi/{notifikasi}/read', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
+    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
 });

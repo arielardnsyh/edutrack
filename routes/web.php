@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\TargetAkademikController;
+use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\TargetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,9 +49,7 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // CRUD Nilai
     Route::resource('nilai', NilaiController::class)->except(['show']);
@@ -59,4 +60,11 @@ Route::middleware('auth')->group(function () {
     // Target Akademik
     Route::get('/target', [TargetAkademikController::class, 'index'])->name('target.index');
     Route::post('/target', [TargetAkademikController::class, 'store'])->name('target.store');
+    // CRUD Target Akademik
+    Route::resource('target', TargetController::class)->except(['show']);
+
+    // Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::patch('/notifikasi/{notifikasi}/read', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
+    Route::patch('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
 });
